@@ -1,38 +1,32 @@
-// const showlist = async () => {
-//   await fetch("data.json")
-//     .then((response) => response.json())
-//     .then((data) => {
-//       console.log(data);
-//       createlist(data)
-//     })
-// };
+document.getElementById("cari").addEventListener("click", function () {
+  const namaInput = document.getElementById("nama").value.toLowerCase();
+  const hasilDiv = document.getElementById("hasil");
 
-// showlist();
-
-// function createlist(data){
-//   const mainUL = document.createElement("ol");
-//   for (let i = 0; i<data.result.length; i++){
-//     const studentLi = document.createElement("li");
-//     studentLi.innerHTML = data.result[i].name;
-
-//     const marksUl = document.createElement("ul");
-//     for (var key in data.result[i].marksUl){
-//       const marksLi = document.createElement("li");
-//       marksLi.innerHTML = key + ":" + data.result[i].marks[key];
-//       marksUl.appendChild(marksLi);
-//     }
-//     studentLi.appendChild(marksUl);
-//     mainUL.appendChild(studentLi);
-//   }
-//   document.body.appendChild(mainUL);
-// }
-
-const showlist = async () => {
-  await fetch("data.json")
-    .then((response) => response.json())
+  fetch("data.json")
+    .then((res) => res.json())
     .then((data) => {
-      console.log(data);
-    });
-};
+      const hasil = data.filter(item => {
+        const nama = (item.nama || item.Nama || "").toLowerCase();
+        return nama.includes(namaInput);
+      });
 
-showlist();
+      if (hasil.length > 0) {
+        hasilDiv.innerHTML = "";
+        hasil.forEach(item => {
+          hasilDiv.innerHTML += `
+            <p><b>Nama:</b> ${item.nama || item.Nama}</p>
+            <p><b>JK:</b> ${item.jk || item.Jk}</p>
+            <p><b>Alamat:</b> ${item.alamat || item.Alamat}</p>
+            <p><b>Kelas:</b> ${item.Kelas}</p>
+            <hr>
+          `;
+        });
+      } else {
+        hasilDiv.innerHTML = "<p>Nama tidak ditemukan.</p>";
+      }
+    })
+    .catch((err) => {
+      hasilDiv.innerHTML = "<p>Gagal memuat data.</p>";
+      console.error(err);
+    });
+});
